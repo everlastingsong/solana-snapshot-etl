@@ -4,7 +4,7 @@ use solana_snapshot_etl::append_vec::{AppendVec, StoredAccountMeta};
 use solana_snapshot_etl::append_vec_iter;
 use std::io::Stdout;
 use std::rc::Rc;
-use bs58;
+use base64;
 
 pub(crate) struct CsvDumper {
     writer: csv::Writer<Stdout>,
@@ -18,6 +18,7 @@ struct Record {
     owner: String,
     data_len: u64,
     lamports: u64,
+    write_version: u64,
     data: String,
 }
 
@@ -47,7 +48,8 @@ impl CsvDumper {
             owner: account.account_meta.owner.to_string(),
             data_len: account.meta.data_len,
             lamports: account.account_meta.lamports,
-            data: bs58::encode(account.data).into_string(),
+            write_version: account.meta.write_version,
+            data: base64::encode(account.data),
         };
         if self.writer.serialize(record).is_err() {
             std::process::exit(1); // if stdout closes, silently exit

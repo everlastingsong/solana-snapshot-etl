@@ -21,7 +21,7 @@ memmap2 = "0.5.5"
 itertools = "0.10.3"
 tar = "0.4.38"
 zstd = "0.11.2"
-bs58 = "0.4.0"
+base64 = "0.13.1"
 
 # Binary deps
 borsh = { version = "0.9.3" }
