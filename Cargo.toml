@@ -1,15 +1,15 @@
 [package]
-name = "solana-snapshot-etl"
-version = "0.3.0"
+name = "solana-snapshot-gpa"
+version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-documentation = "https://docs.rs/solana-snapshot-etl"
-description = "Efficiently unpack Solana snapshots"
-authors = ["Richard Patel <me@terorie.dev>"]
+description = "Efficiently extract accounts from Solana snapshots"
+authors = ["Yugure <yugure.crypto@gmail.com>"]
 categories = ["cryptography::cryptocurrencies", "database"]
 keywords = ["solana"]
 
 [dependencies]
+solana-snapshot-etl = "0.3.0"
 clap = { version = "3.2.14", features = ["derive"] }
 log = "0.4.17"
 solana-runtime = "1.11.3"

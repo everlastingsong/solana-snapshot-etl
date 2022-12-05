@@ -5,7 +5,7 @@ use regex::Regex;
 use bs58;
 use hex;
 
-use crate::append_vec::{StoredAccountMeta};
+use solana_snapshot_etl::append_vec::{StoredAccountMeta};
 
 #[derive(Error, Debug)]
 pub enum FilterParseError {

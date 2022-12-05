@@ -1,5 +1,6 @@
+use crate::filter::AccountFilter;
+
 use serde::Serialize;
-use solana_snapshot_etl::filter::AccountFilter;
 use solana_snapshot_etl::append_vec::{AppendVec, StoredAccountMeta};
 use solana_snapshot_etl::append_vec_iter;
 use std::io::Stdout;

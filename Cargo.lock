@@ -2804,6 +2804,25 @@ dependencies = [
 [[package]]
 name = "solana-snapshot-etl"
 version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e91359e4a0f4fd18bf1e646730169edcd0fcc399dc1ae8e57de24b81e65db423"
+dependencies = [
+ "bincode",
+ "clap",
+ "itertools",
+ "log",
+ "memmap2",
+ "serde",
+ "solana-runtime",
+ "solana-sdk",
+ "tar",
+ "thiserror",
+ "zstd",
+]
+
+[[package]]
+name = "solana-snapshot-gpa"
+version = "0.1.0"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -2830,6 +2849,7 @@ dependencies = [
  "solana-program",
  "solana-runtime",
  "solana-sdk",
+ "solana-snapshot-etl",
  "spl-token",
  "tar",
  "thiserror",

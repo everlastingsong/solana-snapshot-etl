@@ -1,14 +1,16 @@
 use crate::csv::CsvDumper;
+use crate::filter::AccountFilter;
+
 use clap::Parser;
 use log::{error, info};
 use reqwest::blocking::Response;
 use solana_snapshot_etl::archived::ArchiveSnapshotExtractor;
 use solana_snapshot_etl::{AppendVecIterator, SnapshotExtractor};
-use solana_snapshot_etl::filter::AccountFilter;
 use std::fs::{File};
 use std::path::{Path};
 
 mod csv;
+mod filter;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
