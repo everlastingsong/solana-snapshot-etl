@@ -1,10 +1,8 @@
-# Solana Snapshot ETL 📸
+# Solana Snapshot gPA 🧙
 
-[![crates.io](https://img.shields.io/crates/v/solana-snapshot-etl?style=flat-square&logo=rust&color=blue)](https://crates.io/crates/solana-snapshot-etl)
-[![docs.rs](https://img.shields.io/badge/docs.rs-solana--snapshot--etl-blue?style=flat-square&logo=docs.rs)](https://docs.rs/solana-snapshot-etl)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square)](#license)
 
-**`solana-snapshot-etl` efficiently extracts all accounts in a snapshot** to load them into an external system.
+**`solana-snapshot-gpa` efficiently extracts specific accounts in a snapshot** to load them into an external system.
 
 ## Motivation
 
@@ -20,91 +18,87 @@ A full snapshot file contains a copy of all accounts at a specific slot state (i
 Historical accounts data is relevant to blockchain analytics use-cases and event tracing.
 Despite archives being readily available, the ecosystem was missing an easy-to-use tool to access snapshot data.
 
+@terorie have created solana-snapshot-etl, and it is great tool.
+
+In using [solana-snapshot-etl](https://github.com/terorie/solana-snapshot-etl),
+I found it useful to be able to filter accounts by criteria such as getProgramAccounts and get data for accounts with any pubkey.
+solana-snapshot-gpa is a tool for this purpose. solana-snapshot-gpa is based on solana-snapshot-etl.
+
 ## Building
 
 ```shell
-cargo install --git https://github.com/terorie/solana-snapshot-etl --features=standalone --bins
+cargo install --git https://github.com/everlastingsong/solana-snapshot-gpa
 ```
 
 ## Usage
 
-The ETL tool can extract snapshots from a variety of streaming sources
-and load them into one of the supported storage backends.
-
 The basic command-line usage is as follows:
 
 ```
-USAGE:
-    solana-snapshot-etl [OPTIONS] <LOAD_FLAGS> <SOURCE>
+# Extract all accounts
+solana-snapshot-gpa snapshot.tar.zst
+
+# Extract specific accounts based on pubkeys
+solana-snapshot-gpa --pubkey=pubkey1,pubkey2,pubkey3 --pubkey=pubkey4,pubkey5 --pubkey=pubkey6 snapshot.tar.zst
+
+# Extract specific accounts based on owner program with filters
+# owner program = TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+# size = 165
+# pubkey stored from the 32nd byte is r21Gamwd9DtyjHeGywsneoQYR39C1VDwrw7tWxHAwh6
+solana-snapshot-gpa --owner=TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA,size:165,memcmp:r21Gamwd9DtyjHeGywsneoQYR39C1VDwrw7tWxHAwh6@32 snapshot.tar.zst
+
+# Extract specific accounts based on owner program with filters
+# owner program = whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc
+# size = 44
+# u16(little endian) stored from the 40th byte is 128
+solana-snapshot-gpa --owner=whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc,size:44,memcmp:0x8000@40 snapshot.tar.zst
 ```
 
-### Sources
+### Output (CSV)
+* CSV with 7 columns is output.
+* The account data is encoded in base64.
+* Because of the internal format of the output, called AppendVec, multiple versions of the account with different write_version columns are output. The most recent write_version is appropriate.
 
-Extract from a local snapshot file:
-
-```shell
-solana-snapshot-etl /path/to/snapshot-*.tar.zst ...
+```
+pubkey,owner,data_len,lamports,write_version,data
+HT55NVGVTjWmWLjV7BrSMPVZ7ppU8T2xE5nCAZ6YaGad,whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc,44,1197120,492556471222,OEufTI5EvmkT5EH4ORPKaLBjT7Al/eqohzfoQRDRJV41ezN33e4czUAAuAs=
+4kuxsCskbbAvoME1JEdNXJJFWRWP2af2kotyQpmwsVcU,whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc,44,1197120,490748093121,OEufTI5EvmkF3IgGzHvjy10P4GItvoRPV06kXHzKT391zj26u8lAs0AArA0=
 ```
 
-Extract from an unpacked snapshot:
+### Suppliment
 
-```shell
-# Example unarchive command
-tar -I zstd -xvf snapshot-*.tar.zst ./unpacked_snapshot/
+#### How to pick up latest write_version
 
-solana-snapshot-etl ./unpacked_snapshot/
+```
+# extract to result.csv
+solana-snapshot-gpa
+ --owner=xxxxxxx
+ --owner=xxxxxxx,size:xxxx
+ --owner=xxxxxxx,size:xxxx,memcmp:0xffffffff@offset,memcmp:base58@offset
+ --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ snapshot.tar.bz2 > result.csv
+
+# pick up latest write_version only
+tail -n +2 result.csv | sort -t, -k5,5nr | awk -F, '!dup[$1]++' > result.latest.csv
 ```
 
-Stream snapshot from HTTP source or S3 bucket:
+#### How to create JSON to load solana-test-validator
 
-```shell
-solana-snapshot-etl 'https://my-solana-node.bdnodes.net/snapshot.tar.zst?auth=xxx' ...
 ```
+# extract to result.csv
+solana-snapshot-gpa
+ --owner=xxxxxxx
+ --owner=xxxxxxx,size:xxxx
+ --owner=xxxxxxx,size:xxxx,memcmp:0xffffffff@offset,memcmp:base58@offset
+ --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ snapshot.tar.bz2 > result.csv
 
-### Targets
+# pick up latest write_version only
+tail -n +2 result.csv | sort -t, -k5,5nr | awk -F, '!dup[$1]++' > result.latest.csv
 
-#### SQLite3 (recommended)
-
-The fastest way to access snapshot data is the SQLite3 load mechanism.
-
-The resulting SQLite database file can be loaded using any SQLite client library.
-
-```shell
-solana-snapshot-etl snapshot-139240745-*.tar.zst --sqlite-out snapshot.db
-```
-
-The resulting SQLite database contains the following tables.
-
-- `account`
-- `token_account` (SPL Token Program)
-- `token_mint` (SPL Token Program)
-- `token_multisig` (SPL Token Program)
-- `token_metadata` (MPL Metadata Program)
-
-#### CSV
-
-Coming soon!
-
-#### Geyser plugin
-
-Much like `solana-validator`, this tool can write account updates to Geyser plugins.
-
-```shell
-solana-snapshot-etl snapshot-139240745-*.tar.zst --geyser plugin-config.json
-```
-
-For more info, consult Solana's docs: https://docs.solana.com/developing/plugins/geyser-plugins
-
-#### Dump programs
-
-The `--programs-out` flag exports all Solana programs (in ELF format).
-
-```shell
-solana-snapshot-etl snapshot-139240745-*.tar.zst --programs-out programs.tar
-```
-
-or to extract in place
-
-```shell
-solana-snapshot-etl snapshot-139240745-*.tar.zst --programs-out - | tar -xv
+# conver to JSON (directory: accounts)
+mkdir accounts
+cat result.latest.csv | awk -F, -v out="accounts" '{ filename=out"/"$1".json"; print "{\"pubkey\":\"" $1 "\",\"account\":{\"lamports\":" $4 ",\"data\":[\"" $6 "\",\"base64\"],\"owner\":\"" $2 "\",\"executable\":false,\"rentEpoch\":0}}" > filename }'
 ```
