@@ -75,8 +75,8 @@ solana-snapshot-gpa
  --owner=xxxxxxx
  --owner=xxxxxxx,size:xxxx
  --owner=xxxxxxx,size:xxxx,memcmp:0xffffffff@offset,memcmp:base58@offset
- --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
- --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
  snapshot.tar.bz2 > result.csv
 
 # pick up latest write_version only
@@ -91,8 +91,8 @@ solana-snapshot-gpa
  --owner=xxxxxxx
  --owner=xxxxxxx,size:xxxx
  --owner=xxxxxxx,size:xxxx,memcmp:0xffffffff@offset,memcmp:base58@offset
- --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
- --pubkeys:xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
+ --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
  snapshot.tar.bz2 > result.csv
 
 # pick up latest write_version only
