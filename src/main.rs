@@ -44,9 +44,15 @@ fn _main() -> Result<(), Box<dyn std::error::Error>> {
     let mut loader = SupportedLoader::new(&args.source)?;
 
     info!("Dumping to CSV");
+    let mut processed = 0;
     let mut writer = CsvDumper::new(filter);
     for append_vec in loader.iter() {
         writer.dump_append_vec(append_vec?);
+
+        processed += 1;
+        if processed % 100 == 0 {
+            info!("AppendVec processed: {}", processed);
+        }
     }
     drop(writer);
     info!("Done!");

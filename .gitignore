@@ -5,3 +5,4 @@
 unpacked_snapshot/
 *.tar
 *.zst
+/test
