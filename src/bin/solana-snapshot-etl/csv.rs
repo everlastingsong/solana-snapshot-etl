@@ -1,5 +1,5 @@
 use serde::Serialize;
-use solana_program::pubkey::Pubkey;
+use solana_snapshot_etl::filter::AccountFilter;
 use solana_snapshot_etl::append_vec::{AppendVec, StoredAccountMeta};
 use solana_snapshot_etl::append_vec_iter;
 use std::io::Stdout;
@@ -9,7 +9,7 @@ use base64;
 pub(crate) struct CsvDumper {
     writer: csv::Writer<Stdout>,
     accounts_count: u64,
-    owner: Pubkey,
+    filter: AccountFilter,
 }
 
 #[derive(Serialize)]
@@ -23,20 +23,20 @@ struct Record {
 }
 
 impl CsvDumper {
-    pub(crate) fn new(owner: Pubkey) -> Self {
+    pub(crate) fn new(filter: AccountFilter) -> Self {
         let writer = csv::Writer::from_writer(std::io::stdout());
 
         Self {
             writer,
             accounts_count: 0,
-            owner,
+            filter,
         }
     }
 
     pub(crate) fn dump_append_vec(&mut self, append_vec: AppendVec) {
         for account in append_vec_iter(Rc::new(append_vec)) {
             let account = account.access().unwrap();
-            if account.account_meta.owner.eq(&self.owner) {
+            if self.filter.is_match(&account) {
                 self.dump_account(account);
             }
         }

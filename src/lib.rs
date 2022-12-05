@@ -1,27 +1,20 @@
 use std::cell::RefCell;
 use std::ffi::OsStr;
 use std::io::Read;
-use std::path::Path;
 use std::rc::Rc;
 use std::str::FromStr;
 use thiserror::Error;
 
 pub mod append_vec;
 pub mod solana;
-
+pub mod filter;
 pub mod archived;
-pub mod unpacked;
-
-#[cfg(feature = "parallel")]
-pub mod parallel;
 
 use crate::append_vec::{AppendVec, StoredAccountMeta};
 use crate::solana::{
     deserialize_from, AccountsDbFields, DeserializableVersionedBank,
     SerializableAccountStorageEntry,
 };
-
-const SNAPSHOTS_DIR: &str = "snapshots";
 
 #[derive(Error, Debug)]
 pub enum SnapshotError {
@@ -86,23 +79,6 @@ impl StoredAccountMetaHandle {
 
     pub fn access(&self) -> Option<StoredAccountMeta<'_>> {
         Some(self.append_vec.get_account(self.offset)?.0)
-    }
-}
-
-pub trait ReadProgressTracking {
-    fn new_read_progress_tracker(
-        &self,
-        path: &Path,
-        rd: Box<dyn Read>,
-        file_len: u64,
-    ) -> Box<dyn Read>;
-}
-
-struct NullReadProgressTracking {}
-
-impl ReadProgressTracking for NullReadProgressTracking {
-    fn new_read_progress_tracker(&self, _: &Path, rd: Box<dyn Read>, _: u64) -> Box<dyn Read> {
-        rd
     }
 }
 
