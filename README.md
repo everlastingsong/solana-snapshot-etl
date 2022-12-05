@@ -36,22 +36,22 @@ The basic command-line usage is as follows:
 
 ```
 # Extract all accounts
-solana-snapshot-gpa snapshot.tar.zst
+solana-snapshot-gpa snapshot.tar.zst > result.csv
 
 # Extract specific accounts based on pubkeys
-solana-snapshot-gpa --pubkey=pubkey1,pubkey2,pubkey3 --pubkey=pubkey4,pubkey5 --pubkey=pubkey6 snapshot.tar.zst
+solana-snapshot-gpa --pubkey=pubkey1,pubkey2,pubkey3 --pubkey=pubkey4,pubkey5 --pubkey=pubkey6 snapshot.tar.zst > result.csv
 
 # Extract specific accounts based on owner program with filters
 # owner program = TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
 # size = 165
 # pubkey stored from the 32nd byte is r21Gamwd9DtyjHeGywsneoQYR39C1VDwrw7tWxHAwh6
-solana-snapshot-gpa --owner=TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA,size:165,memcmp:r21Gamwd9DtyjHeGywsneoQYR39C1VDwrw7tWxHAwh6@32 snapshot.tar.zst
+solana-snapshot-gpa --owner=TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA,size:165,memcmp:r21Gamwd9DtyjHeGywsneoQYR39C1VDwrw7tWxHAwh6@32 snapshot.tar.zst > result.csv
 
 # Extract specific accounts based on owner program with filters
 # owner program = whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc
 # size = 44
 # u16(little endian) stored from the 40th byte is 128
-solana-snapshot-gpa --owner=whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc,size:44,memcmp:0x8000@40 snapshot.tar.zst
+solana-snapshot-gpa --owner=whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc,size:44,memcmp:0x8000@40 snapshot.tar.zst > result.csv
 ```
 
 ### Output (CSV)
@@ -77,7 +77,7 @@ solana-snapshot-gpa
  --owner=xxxxxxx,size:xxxx,memcmp:0xffffffff@offset,memcmp:base58@offset
  --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
  --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
- snapshot.tar.bz2 > result.csv
+ snapshot.tar.zst > result.csv
 
 # pick up latest write_version only
 tail -n +2 result.csv | sort -t, -k5,5nr | awk -F, '!dup[$1]++' > result.latest.csv
@@ -93,7 +93,7 @@ solana-snapshot-gpa
  --owner=xxxxxxx,size:xxxx,memcmp:0xffffffff@offset,memcmp:base58@offset
  --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
  --pubkey=xxxxxx,xxxxxxxx,xxxxxxx,xxxxxxx,xxxxxxx,xxxxxxxx,xxxxxxx
- snapshot.tar.bz2 > result.csv
+ snapshot.tar.zst > result.csv
 
 # pick up latest write_version only
 tail -n +2 result.csv | sort -t, -k5,5nr | awk -F, '!dup[$1]++' > result.latest.csv
