@@ -100,7 +100,7 @@ tail -n +2 result.csv | sort -t, -k5,5nr | awk -F, '!dup[$1]++' > result.latest.
 
 # conver to JSON (directory: accounts)
 mkdir accounts
-cat result.latest.csv | awk -F, -v out="accounts" '{ filename=out"/"$1".json"; print "{\"pubkey\":\"" $1 "\",\"account\":{\"lamports\":" $4 ",\"data\":[\"" $6 "\",\"base64\"],\"owner\":\"" $2 "\",\"executable\":false,\"rentEpoch\":0}}" > filename }'
+cat result.latest.csv | awk -F, -v out="accounts" '{ filename=out"/"$1".json"; print "{\"pubkey\":\"" $1 "\",\"account\":{\"lamports\":" $4 ",\"data\":[\"" $6 "\",\"base64\"],\"owner\":\"" $2 "\",\"executable\":false,\"rentEpoch\":0}}" > filename; close(filename) }'
 
 # startup solana-test-validator with extracted accounts
 solana-test-validator --account-dir accounts --reset 
