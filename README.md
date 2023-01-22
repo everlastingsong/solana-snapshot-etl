@@ -41,6 +41,15 @@ solana-snapshot-gpa snapshot.tar.zst > result.csv
 # Extract specific accounts based on pubkeys
 solana-snapshot-gpa --pubkey=pubkey1,pubkey2,pubkey3 --pubkey=pubkey4,pubkey5 --pubkey=pubkey6 snapshot.tar.zst > result.csv
 
+# Extract specific accounts based on pubkeys (pubkeys are listed in a text file)
+#
+# pubkeys.txt (1 pubkey per line)
+# pubkey1
+# pubkey2
+# pubkey3
+# 
+solana-snapshot-gpa --pubkeyfile=pubkeys.txt snapshot.tar.zst > result.csv
+
 # Extract specific accounts based on owner program with filters
 # owner program = TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
 # size = 165
