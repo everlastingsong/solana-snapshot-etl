@@ -19,9 +19,17 @@ struct Args {
     #[clap(short, long)]
     pubkey: Vec<String>,
 
+    /// Fetch all the accounts specified in the file
+    #[clap(long)]
+    pubkeyfile: Option<String>,
+
     /// Fetch all the accounts owned by the specified program id
     #[clap(short, long)]
     owner: Vec<String>,
+
+    /// Suppress output of header line
+    #[clap(short, long)]
+    noheader: bool,
 
     #[clap(help = "Snapshot archive file")]
     source: String,
@@ -40,12 +48,12 @@ fn main() {
 fn _main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
-    let filter = AccountFilter::new(&args.pubkey, &args.owner)?;
+    let filter = AccountFilter::new(&args.pubkey, &args.pubkeyfile, &args.owner)?;
     let mut loader = SupportedLoader::new(&args.source)?;
 
     info!("Dumping to CSV");
     let mut processed = 0;
-    let mut writer = CsvDumper::new(filter);
+    let mut writer = CsvDumper::new(filter, args.noheader);
     for append_vec in loader.iter() {
         writer.dump_append_vec(append_vec?);
 

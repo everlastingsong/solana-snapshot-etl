@@ -24,9 +24,11 @@ struct Record {
 }
 
 impl CsvDumper {
-    pub(crate) fn new(filter: AccountFilter) -> Self {
-        let writer = csv::Writer::from_writer(std::io::stdout());
-
+    pub(crate) fn new(filter: AccountFilter, noheader: bool) -> Self {
+        let writer = csv::WriterBuilder::new()
+            .has_headers(!noheader)
+            .from_writer(std::io::stdout());
+        
         Self {
             writer,
             accounts_count: 0,

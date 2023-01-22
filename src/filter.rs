@@ -1,4 +1,6 @@
 use solana_program::pubkey::Pubkey;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use std::str::FromStr;
 use thiserror::Error;
 use regex::Regex;
@@ -147,7 +149,7 @@ impl OwnerFilter {
 }
 
 impl AccountFilter {
-  pub fn new(pubkeys: &Vec<String>, owners: &Vec<String>) -> Result<Self, FilterParseError> {
+  pub fn new(pubkeys: &Vec<String>, pubkeyfile: &Option<String>, owners: &Vec<String>) -> Result<Self, FilterParseError> {
     let mut pubkey_filters: Vec<PubkeyFilter> = vec![];
     let mut owner_filters: Vec<OwnerFilter> = vec![];
 
@@ -158,6 +160,23 @@ impl AccountFilter {
         let pubkey_filter = PubkeyFilter::new(&pk.to_string())?;
         pubkey_filters.push(pubkey_filter);
       }
+    }
+
+    // --pubkeyfile=file (1 pubkey per line)
+    match pubkeyfile {
+      None => {},
+      Some(file) => {
+        let f = File::open(file).unwrap();
+        let reader = BufReader::new(f);
+        for line in reader.lines() {
+          let line = line.unwrap();
+          let trimed = line.trim();
+          if trimed.len() == 0 { continue }
+
+          let pubkey_filter = PubkeyFilter::new(&trimed.to_string())?;
+          pubkey_filters.push(pubkey_filter);
+        }
+      },
     }
 
     // --owner=TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
