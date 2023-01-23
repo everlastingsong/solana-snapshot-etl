@@ -66,6 +66,7 @@ solana-snapshot-gpa --owner=whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc,size:44,
 ### Output (CSV)
 * CSV with 7 columns is output.
 * The account data is encoded in base64.
+* The output of the headers can be suppressed using --noheader option.
 * Because of the internal format of the output, called AppendVec, multiple versions of the account with different write_version columns are output. The most recent write_version is appropriate.
 
 ```
