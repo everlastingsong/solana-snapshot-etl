@@ -9,7 +9,10 @@ categories = ["cryptography::cryptocurrencies", "database"]
 keywords = ["solana"]
 
 [dependencies]
-solana-snapshot-etl = "0.3.0"
+# solana-snapshot-etl = "0.3.0"
+# we need to update append_vec.rs with latest StoredMeta and AccountMeta for recent snapshots
+# thanks: https://github.com/terorie/solana-snapshot-etl/pull/62
+solana-snapshot-etl = { git = "https://github.com/terorie/solana-snapshot-etl", rev = "d1f569b" } 
 clap = { version = "3.2.14", features = ["derive"] }
 log = "0.4.17"
 solana-runtime = "1.11.3"
