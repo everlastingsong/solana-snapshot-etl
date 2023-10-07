@@ -27,7 +27,9 @@ solana-snapshot-gpa is a tool for this purpose. solana-snapshot-gpa is based on 
 ## Building
 
 ```shell
-cargo install --git https://github.com/everlastingsong/solana-snapshot-gpa
+git clone https://github.com/everlastingsong/solana-snapshot-gpa
+cd solana-snapshot-gpa
+cargo build
 ```
 
 ## Usage
