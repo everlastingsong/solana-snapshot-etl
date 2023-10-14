@@ -2,6 +2,7 @@ use solana_program::pubkey::Pubkey;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::str::FromStr;
+use std::collections::HashSet;
 use thiserror::Error;
 use regex::Regex;
 use bs58;
@@ -49,7 +50,7 @@ pub struct OwnerFilter {
 }
 
 pub struct AccountFilter {
-  pubkey_filters: Vec<PubkeyFilter>,
+  pubkey_filters: HashSet<String>,
   owner_filters: Vec<OwnerFilter>,
 }
 
@@ -62,17 +63,6 @@ impl MemCmp {
     }
 
     return true;
-  }
-}
-
-impl PubkeyFilter {
-  pub fn new(pubkey_base58: &String) -> Result<Self, FilterParseError> {
-    let pubkey = Pubkey::from_str(pubkey_base58.as_str()).or_else(|_e| Err(FilterParseError::InvalidPubkey))?;
-    Ok(PubkeyFilter { pubkey })
-  }
-
-  pub fn is_match(&self, account: &StoredAccountMeta) -> bool {
-    return account.meta.pubkey.eq(&self.pubkey);
   }
 }
 
@@ -150,15 +140,14 @@ impl OwnerFilter {
 
 impl AccountFilter {
   pub fn new(pubkeys: &Vec<String>, pubkeyfile: &Option<String>, owners: &Vec<String>) -> Result<Self, FilterParseError> {
-    let mut pubkey_filters: Vec<PubkeyFilter> = vec![];
+    let mut pubkey_filters: HashSet<String> = HashSet::new();
     let mut owner_filters: Vec<OwnerFilter> = vec![];
 
     // --pubkey=pk1
     // --pubkey=pk1,pk2,pk3,...
     for pubkey in pubkeys.iter() {
       for pk in pubkey.split(',') {
-        let pubkey_filter = PubkeyFilter::new(&pk.to_string())?;
-        pubkey_filters.push(pubkey_filter);
+        pubkey_filters.insert(pk.to_string());
       }
     }
 
@@ -173,8 +162,7 @@ impl AccountFilter {
           let trimed = line.trim();
           if trimed.len() == 0 { continue }
 
-          let pubkey_filter = PubkeyFilter::new(&trimed.to_string())?;
-          pubkey_filters.push(pubkey_filter);
+          pubkey_filters.insert(trimed.to_string());
         }
       },
     }
@@ -197,9 +185,8 @@ impl AccountFilter {
   pub fn is_match(&self, account: &StoredAccountMeta) -> bool {
     if self.pubkey_filters.is_empty() && self.owner_filters.is_empty() { return true; }
 
-    for pubkey_filter in self.pubkey_filters.iter() {
-      if pubkey_filter.is_match(account) { return true; }
-    }
+    if self.pubkey_filters.contains(&account.meta.pubkey.to_string()) { return true; }
+
     for owner_filter in self.owner_filters.iter() {
       if owner_filter.is_match(account) { return true; }
     }

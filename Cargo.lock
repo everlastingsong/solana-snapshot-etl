@@ -2804,8 +2804,7 @@ dependencies = [
 [[package]]
 name = "solana-snapshot-etl"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e91359e4a0f4fd18bf1e646730169edcd0fcc399dc1ae8e57de24b81e65db423"
+source = "git+https://github.com/terorie/solana-snapshot-etl?rev=d1f569b#d1f569b3e9384ba54948d59875da08dfbec4559e"
 dependencies = [
  "bincode",
  "clap",
