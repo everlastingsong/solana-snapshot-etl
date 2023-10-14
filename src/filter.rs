@@ -8,13 +8,10 @@ use regex::Regex;
 use bs58;
 use hex;
 
-use solana_snapshot_etl::append_vec::{StoredAccountMeta};
+use solana_snapshot_etl::append_vec::StoredAccountMeta;
 
 #[derive(Error, Debug)]
 pub enum FilterParseError {
-  #[error("Invalid pubkey")]
-  InvalidPubkey,
-
   #[error("Invalid owner filter syntax")]
   InvalidOwnerFilterSyntax,
   #[error("Invalid owner pubkey")]
@@ -37,10 +34,6 @@ pub enum FilterParseError {
 pub struct MemCmp {
   offset: usize,
   bytes: Vec<u8>,
-}
-
-pub struct PubkeyFilter {
-  pubkey: Pubkey,
 }
 
 pub struct OwnerFilter {
