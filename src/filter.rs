@@ -45,6 +45,7 @@ pub struct OwnerFilter {
 pub struct AccountFilter {
   pubkey_filters: HashSet<String>,
   owner_filters: Vec<OwnerFilter>,
+  zeroed_filter: bool,
 }
 
 impl MemCmp {
@@ -132,7 +133,12 @@ impl OwnerFilter {
 }
 
 impl AccountFilter {
-  pub fn new(pubkeys: &Vec<String>, pubkeyfile: &Option<String>, owners: &Vec<String>) -> Result<Self, FilterParseError> {
+  pub fn new(
+    pubkeys: &Vec<String>,
+    pubkeyfile: &Option<String>,
+    owners: &Vec<String>,
+    zeroed: bool,
+  ) -> Result<Self, FilterParseError> {
     let mut pubkey_filters: HashSet<String> = HashSet::new();
     let mut owner_filters: Vec<OwnerFilter> = vec![];
 
@@ -171,12 +177,15 @@ impl AccountFilter {
     Ok(AccountFilter {
       pubkey_filters,
       owner_filters,
+      zeroed_filter: zeroed,
     })
   }
 
 
   pub fn is_match(&self, account: &StoredAccountMeta) -> bool {
-    if self.pubkey_filters.is_empty() && self.owner_filters.is_empty() { return true; }
+    if self.pubkey_filters.is_empty() && self.owner_filters.is_empty() && !self.zeroed_filter { return true; }
+
+    if self.zeroed_filter && account.data.iter().all(|&x| x == 0) { return true; }
 
     if self.pubkey_filters.contains(&account.meta.pubkey.to_string()) { return true; }
 

@@ -27,6 +27,10 @@ struct Args {
     #[clap(short, long)]
     owner: Vec<String>,
 
+    /// Fetch all the zeroed accounts
+    #[clap(short, long)]
+    zeroed: bool,
+
     /// Suppress output of header line
     #[clap(short, long)]
     noheader: bool,
@@ -48,7 +52,7 @@ fn main() {
 fn _main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
-    let filter = AccountFilter::new(&args.pubkey, &args.pubkeyfile, &args.owner)?;
+    let filter = AccountFilter::new(&args.pubkey, &args.pubkeyfile, &args.owner, args.zeroed)?;
     let mut loader = SupportedLoader::new(&args.source)?;
 
     info!("Dumping to CSV");
